@@ -1,1 +1,54 @@
-hello
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MD Viewer</title>
+    <!-- Подключаем библиотеку marked с CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        body {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+        }
+        #content {
+            background: #f9f9f9;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        /* Можно добавить стили для кода и таблиц */
+        pre { background: #272822; color: #f8f8f2; padding: 1rem; overflow-x: auto; }
+        code { font-family: 'Courier New', monospace; }
+        img { max-width: 100%; }
+    </style>
+</head>
+<body>
+    <h1>📄 Документация</h1>
+    <div id="content">Загрузка...</div>
+
+    <script>
+        // Определяем, какой .md файл загружать.
+        // Можно брать из URL: ?page=readme.md или по умолчанию.
+        const params = new URLSearchParams(window.location.search);
+        const mdFile = params.get('page') || 'index.md'; // по умолчанию index.md
+
+        fetch(mdFile)
+            .then(response => {
+                if (!response.ok) throw new Error(`Не удалось загрузить ${mdFile}`);
+                return response.text();
+            })
+            .then(markdown => {
+                // Парсим Markdown в HTML
+                const html = marked.parse(markdown);
+                document.getElementById('content').innerHTML = html;
+            })
+            .catch(error => {
+                document.getElementById('content').innerHTML = `<p style="color:red;">Ошибка: ${error.message}</p>`;
+            });
+    </script>
+</body>
+</html>
